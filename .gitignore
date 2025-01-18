@@ -1,0 +1,15 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+
+# VS Code settings
+.vscode/
+
+# API keys or other sensitive files
+*api_key.json
