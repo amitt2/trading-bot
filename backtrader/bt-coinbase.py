@@ -1,17 +1,14 @@
 import backtrader as bt
-from coinbase_app import CoinbaseApp
-from coinbase_data import CoinbaseData  # Make sure to replace 'coinbase_app' with the actual module name if different
-
-class TestStrategy(bt.Strategy):
-    def next(self):
-       print(f"Time: {self.data.datetime.datetime()}, Close: {self.data.close[0]}")
+from coinbase_api import CoinbaseApi
+from coinbase_data import CoinbaseData
+from strategy.sma_cross_strategy import SmaCrossStrategy
 
 def main():
     # Get data
-    coinbase_app = CoinbaseApp(key_file="cdp_api_key.json")
+    coinbase_app = CoinbaseApi(key_file="cdp_api_key.json")
 
     # Download data
-    data = coinbase_app.download('XRP-USD', '2025-01-17 09:00', '2025-01-17 12:00', 'FIVE_MINUTE', 100)
+    data = coinbase_app.download('XRP-USD', '2025-01-19 17:30', '2025-01-19 18:30', 'ONE_MINUTE', 100)
 
     df = CoinbaseData(dataname=data)
     
@@ -19,14 +16,21 @@ def main():
     cerebro = bt.Cerebro()
 
     # Add strategy
-    cerebro.addstrategy(TestStrategy)
+    cerebro.addstrategy(SmaCrossStrategy)
 
     # Add data
     cerebro.adddata(df)
 
+    # Set cash
+    cerebro.broker.setcash(120000.0)
+
+    print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
+
     # Run over everything
     cerebro.run()
 
+    print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+    
     # Plot the result
     cerebro.plot()
     

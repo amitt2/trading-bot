@@ -4,7 +4,7 @@ import pandas as pd
 import backtrader as bt
 from coinbase.rest import RESTClient
 
-class CoinbaseApp:
+class CoinbaseApi:
     def __init__(self, key_file):
         if not os.path.isfile(key_file):
             raise FileNotFoundError(f"No such file or directory: '{key_file}'")
