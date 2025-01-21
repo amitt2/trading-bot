@@ -34,6 +34,8 @@ if __name__ == '__main__':
     # Set the commission
     cerebro.broker.setcommission(commission=0.001)
 
+    cerebro.addobserver(bt.observers.Value)
+
     # Run over everything
     cerebro.run()
 

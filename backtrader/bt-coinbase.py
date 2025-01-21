@@ -8,11 +8,12 @@ def main():
     coinbase_app = CoinbaseApi(key_file="cdp_api_key.json")
 
     # Download data
-    data = coinbase_app.download('XRP-USD', '2025-01-19 17:30', '2025-01-19 18:30', 'ONE_MINUTE', 100)
+    data = coinbase_app.download('DOGE-USD', '2025-01-19 00:00', '2025-01-19 21:59', 'FIVE_MINUTE', 349)
+    print(data)
 
     df = CoinbaseData(dataname=data)
     
-    # Create backtrader engine
+    #Create backtrader engine
     cerebro = bt.Cerebro()
 
     # Add strategy
@@ -22,7 +23,10 @@ def main():
     cerebro.adddata(df)
 
     # Set cash
-    cerebro.broker.setcash(120000.0)
+    cerebro.broker.setcash(12000.0)
+
+    cerebro.addsizer(bt.sizers.PercentSizer, percents=100)
+    cerebro.broker.setcommission(commission=0.001)
 
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 

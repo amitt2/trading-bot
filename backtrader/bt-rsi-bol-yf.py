@@ -6,8 +6,10 @@ from  strategy.rsi_bollinger_bands import RsiBollingerBands
 
 def main():
     # Get data
-    data = yf.download('AAPL', start='2021-01-01', end='2021-12-31')
+    data = yf.download('XRP-USD', '2024-01-10', '2025-01-10', auto_adjust=True, multi_level_index=False)
     
+    df = bt.feeds.PandasData(dataname=data)
+
     # Create backtrader engine
     cerebro = bt.Cerebro()
     
@@ -15,10 +17,12 @@ def main():
     cerebro.addstrategy(RsiBollingerBands)
     
     # Add data
-    cerebro.adddata(data)
+    cerebro.adddata(df)
     
     # Set cash
     cerebro.broker.setcash(100000.0)
+
+    cerebro.addsizer(bt.sizers.PercentSizer, percents=100)
     
     # Run over everything
     cerebro.run()

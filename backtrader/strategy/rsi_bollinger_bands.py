@@ -15,7 +15,6 @@ class RsiBollingerBands(bt.Strategy):
         self.rsi = RSI(period=self.params.rsi_period)
         self.bbands = BollingerBands(period=self.params.bb_period, devfactor=self.params.bb_dev)
     
-
     def next(self):
          
          # Check if we are in the market

@@ -35,7 +35,7 @@ def main():
     cerebro.addsizer(bt.sizers.FixedSize, stake=10)
 
     # Set the commission
-    cerebro.broker.setcommission(commission=0.05)
+    cerebro.broker.setcommission(commission=0.01)
 
     # Run over everything
     cerebro.run()

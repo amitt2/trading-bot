@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import os
 import pandas as pd
-import backtrader as bt
 from coinbase.rest import RESTClient
 
 class CoinbaseApi:
@@ -16,6 +15,7 @@ class CoinbaseApi:
         candles = self.client.get_candles(product_id, start_timestamp, end_timestamp, granularity, limit)
         candles_dict = candles.to_dict()
         df = pd.DataFrame(candles_dict['candles'], columns=['start','low', 'high', 'open', 'close', 'volume'])
+        df['start'] = pd.to_numeric(df['start'], errors='coerce')
         df['start'] = pd.to_datetime(df['start'], unit='s')
 
         numeric_columns = ['low', 'high', 'open', 'close', 'volume']

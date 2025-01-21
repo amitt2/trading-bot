@@ -2,3 +2,6 @@ pandas
 numpy
 matplotlib
 backtrader
+yfinance
+pandas_ta
+asyncio
