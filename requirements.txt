@@ -5,3 +5,4 @@ backtrader
 yfinance
 pandas_ta
 asyncio
+coinbase-advanced-py

@@ -9,5 +9,6 @@ pip install backtrader
 pip install yfinance
 pip install pandas_ta
 pip install asyncio
+pip install coinbase-advanced-py
 
 ```
