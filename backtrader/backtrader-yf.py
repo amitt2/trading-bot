@@ -19,13 +19,15 @@ def main():
 
     cerebro.addobserver(bt.observers.DrawDown)
 
+    cerebro.addwriter(bt.WriterFile, out='log.txt', csv=True)
+
     print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     cerebro.run()
 
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
-    cerebro.plot()
+    #cerebro.plot()
 
 if __name__ == '__main__':
     main()

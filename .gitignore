@@ -13,3 +13,5 @@ venv/
 
 # API keys or other sensitive files
 *api_key.json
+*.log
+*.csv
