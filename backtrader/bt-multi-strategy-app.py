@@ -5,12 +5,13 @@ from coinbase_api import CoinbaseApi
 from coinbase_data import CoinbaseData
 from strategy.sma_cross_strategy import SmaCrossStrategy
 from strategy.rsi_bollinger_bands import RsiBollingerBands
+from strategy.ema_macd import EmaMACDStrategy
 
 KEY_FILE = "cdp_api_key.json"
 RESULTS_DIR = "results"
 
 class BacktraderApp:
-    def __init__(self, ticker, start_date, end_date, timeframe, cash, commission):
+    def __init__(self, ticker, start_date, end_date, timeframe, cash, commission, percents):
         """
         Initialize the BacktraderApp with the given parameters.
 
@@ -21,6 +22,7 @@ class BacktraderApp:
             timeframe (str): The timeframe for the data (e.g., 'FIVE_MINUTE').
             cash (float): The initial cash for the broker.
             commission (float): The commission for the broker.
+            percents (float): The percentage of cash to use for each trade.
         """
         self.ticker = ticker
         self.start_date = start_date
@@ -28,6 +30,7 @@ class BacktraderApp:
         self.timeframe = timeframe
         self.cash = cash
         self.commission = commission
+        self.percents = percents
         self.data = self.get_data()
 
     def get_data(self):
@@ -52,7 +55,7 @@ class BacktraderApp:
         cerebro.addwriter(bt.WriterFile, out=file_name, csv=True)
         cerebro.addstrategy(strategy)
         cerebro.broker.setcash(self.cash)
-        cerebro.addsizer(bt.sizers.PercentSizer, percents=100)
+        cerebro.addsizer(bt.sizers.PercentSizer, percents=self.percents)
         cerebro.broker.setcommission(commission=self.commission)
         return cerebro
 
@@ -65,9 +68,9 @@ class BacktraderApp:
 
 if __name__ == "__main__":
     end_date = dt.datetime.now()
-    start_date = end_date - dt.timedelta(hours=2)
+    start_date = end_date - dt.timedelta(hours=5)
     
-    strategies = [SmaCrossStrategy, RsiBollingerBands]  # Add other strategies to this list as needed
+    strategies = [EmaMACDStrategy, SmaCrossStrategy, RsiBollingerBands]  # Add other strategies to this list as needed
     
     for strategy in strategies:
         app = BacktraderApp(
@@ -76,7 +79,8 @@ if __name__ == "__main__":
             end_date=end_date,
             timeframe='ONE_MINUTE',
             cash=1000.0,
-            commission=0.00
+            commission=0.60,
+            percents=100.0
         )
         cerebro = app.setup(strategy)
         app.run(cerebro)

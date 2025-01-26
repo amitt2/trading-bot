@@ -2,10 +2,9 @@ import backtrader as bt
 
 class EmaMACDStrategy(bt.Strategy):
     params = (
-        ("fast_length", 5),
-        ("slow_length", 20),
-        ("signal_length", 5),
-        ("order_percentage", 0.95),
+        ("fast_length", 12),
+        ("slow_length", 26),
+        ("signal_length", 9),
         ('printlog', True),
     )
 
@@ -82,12 +81,12 @@ class EmaMACDStrategy(bt.Strategy):
         if not self.position:
             if self.crossover > 0:
                 self.log('BUY CREATE, %.2f' % self.data.close[0])
-                self.order = self.buy(size=self.broker.get_cash() * self.params.order_percentage / self.data.close[0])
+                self.order = self.buy()
 
         else:
             if self.crossover < 0:
                 self.log('SELL CREATE, %.2f' % self.data.close[0])
-                self.order = self.sell(size=self.position.size)
+                self.order = self.sell()
 
     def stop(self):
         self.log('(Fast Period %2d) (Slow Period %2d) Ending Value %.2f' %
