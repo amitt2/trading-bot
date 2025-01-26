@@ -5,7 +5,6 @@ from coinbase_api import CoinbaseApi
 from coinbase_data import CoinbaseData
 from strategy.sma_cross_strategy import SmaCrossStrategy
 from strategy.rsi_bollinger_bands import RsiBollingerBands
-from analyzer.csv_logger import CSVLogger
 
 KEY_FILE = "cdp_api_key.json"
 RESULTS_DIR = "results"
@@ -49,22 +48,20 @@ class BacktraderApp:
         cerebro = bt.Cerebro()
         cerebro.adddata(self.data)
         strategy_name = strategy.__name__
-        file_name = f"bt_results_{self.ticker}_{strategy_name}_{self.end_date.strftime('%Y_%m_%d_%H')}.csv"
+        file_name = os.path.join(RESULTS_DIR, f"bt_results_{self.ticker}_{strategy_name}_{self.end_date.strftime('%Y_%m_%d_%H')}.csv")
+        cerebro.addwriter(bt.WriterFile, out=file_name, csv=True)
         cerebro.addstrategy(strategy)
-        cerebro.addanalyzer(CSVLogger, _name=f'csvlogger_{strategy_name}', filename=file_name, directory=RESULTS_DIR)
         cerebro.broker.setcash(self.cash)
         cerebro.addsizer(bt.sizers.PercentSizer, percents=100)
         cerebro.broker.setcommission(commission=self.commission)
         return cerebro
 
-    def run(self, cerebro, strategy_name):
+    def run(self, cerebro):
         """
         Run the Backtrader engine and save the plot results to a file.
         """
         cerebro.run()
-        plot_file = os.path.join(RESULTS_DIR, f"bt_plot_{self.ticker}_{strategy_name}_{self.end_date.strftime('%Y_%m_%d_%H')}.png")
-        img = cerebro.plot(style='line', plotdist=0.1, grid=True, iplot=False)
-        img[0][0].savefig(plot_file)
+        
 
 if __name__ == "__main__":
     end_date = dt.datetime.now()
@@ -82,4 +79,4 @@ if __name__ == "__main__":
             commission=0.00
         )
         cerebro = app.setup(strategy)
-        app.run(cerebro, strategy.__name__)
+        app.run(cerebro)
