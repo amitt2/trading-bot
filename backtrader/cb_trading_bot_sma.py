@@ -1,7 +1,7 @@
 import asyncio
 import pandas_ta as ta
 import datetime as dt
-from coinbase_api import CoinbaseApi
+from api.coinbase_api import CoinbaseApi
 
 class TradingBotSMA:
     def __init__(self, ticker, key_file, interval_fast, interval_slow):

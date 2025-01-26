@@ -1,6 +1,6 @@
 import backtrader as bt
-from coinbase_api import CoinbaseApi
-from coinbase_data import CoinbaseData
+from api.coinbase_api import CoinbaseApi
+from api.coinbase_data import CoinbaseData
 from strategy.sma_cross_strategy import SmaCrossStrategy
 from strategy.sma_vwap_strategy import SmaVwapStrategy
 
@@ -9,7 +9,7 @@ def main():
     coinbase_app = CoinbaseApi(key_file="cdp_api_key.json")
 
     # Download data
-    data = coinbase_app.download('BTC-USD', '2025-01-01 00:00', '2025-01-20 00:00', 'FIVE_MINUTE', 349)
+    data = coinbase_app.download('BTC-USD', '2025-01-19 00:00', '2025-01-20 00:00', 'FIVE_MINUTE', 349)
     print(data)
 
     df = CoinbaseData(dataname=data)

@@ -1,5 +1,5 @@
 import backtrader as bt
-import strategy.bt_vwap_indicator as vwap
+import indicator.bt_vwap_indicator as vwap
 class SmaVwapStrategy(bt.Strategy):
 
     # list of parameters which are configurable for the strategy

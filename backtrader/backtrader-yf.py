@@ -17,7 +17,7 @@ def main():
 
     cerebro.adddata(data)
 
-    cerebro.addstrategy(SmaCrossStrategy)
+    cerebro.addstrategy(SmaVwapStrategy)
 
     #cerebro.addobserver(bt.observers.DrawDown)
 

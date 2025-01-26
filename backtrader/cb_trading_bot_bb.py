@@ -1,4 +1,4 @@
-from coinbase_api import CoinbaseApi
+from api.coinbase_api import CoinbaseApi
 import datetime as dt
 import pandas as pd
 import pandas_ta as ta

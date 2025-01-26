@@ -1,8 +1,8 @@
 import backtrader as bt
 import datetime as dt
 import os
-from coinbase_api import CoinbaseApi
-from coinbase_data import CoinbaseData
+from api.coinbase_api import CoinbaseApi
+from api.coinbase_data import CoinbaseData
 from strategy.sma_cross_strategy import SmaCrossStrategy
 from strategy.rsi_bollinger_bands import RsiBollingerBands
 from strategy.ema_macd import EmaMACDStrategy
