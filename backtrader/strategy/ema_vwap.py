@@ -1,14 +1,13 @@
 import backtrader as bt
-import indicator.bt_vwap_indicator as vwap
 import indicator.bt_vwap_rolling as vwap_rolling
-class SmaVwapStrategy(bt.Strategy):
 
-    # list of parameters which are configurable for the strategy
-    params = dict(
-        pfast=5,  # period for the fast moving average
-        pslow=20, # period for the slow moving average
-        pvwapp=14, # period for the VWAP
-        printlog=True,
+class EmaVwapStrategy(bt.Strategy):
+    params = (
+        ("fast_length", 12),
+        ("slow_length", 26),
+        ("signal_length", 9),
+        ("pvwapp", 26), # period for the VWAP
+        ('printlog', True),
     )
 
     def log(self, txt, dt=None, doprint=False):
@@ -18,19 +17,25 @@ class SmaVwapStrategy(bt.Strategy):
             print('%s, %s' % (dt.isoformat(), txt))
 
     def __init__(self):
-        # Keep a reference to the "close" line in the data[0] dataseries
+        
         self.dataclose = self.datas[0].close
 
-        # To keep track of pending orders and buy price/commission
-        self.order = None
-        self.buyprice = None
-        self.buycomm = None
-
-        sma1 = bt.ind.SMA(period=self.p.pfast)  # fast moving average
-        sma2 = bt.ind.SMA(period=self.p.pslow)  # slow moving average
-        self.crossover = bt.ind.CrossOver(sma1, sma2)  # crossover signal
+        self.ema_fast = bt.indicators.ExponentialMovingAverage(
+            self.datas[0], period=self.params.fast_length
+        )
+        self.ema_slow = bt.indicators.ExponentialMovingAverage(
+            self.datas[0], period=self.params.slow_length
+        )
+        self.macd = self.ema_fast - self.ema_slow
+        self.signal = bt.indicators.ExponentialMovingAverage(
+            self.macd, period=self.params.signal_length
+        )
+        self.crossover = bt.indicators.CrossOver(self.macd, self.signal)
+        self.hist = self.macd - self.signal
 
         self.vwap = vwap_rolling.VWAPR(period=self.p.pvwapp) # vwap indicator
+
+        self.order = None
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
@@ -72,26 +77,25 @@ class SmaVwapStrategy(bt.Strategy):
         
     def next(self):
         # Simply log the closing price of the series from the reference
-        self.log('Close, %.2f' % self.dataclose[0])
+        self.log('Close, %.2f' % self.data.close[0])
 
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
             return
         
+        if len(self.data) < max(self.params.fast_length, self.params.slow_length, self.params.signal_length):
+            return
+
         if not self.position:
-            if not self.position:  # not in the market
-                # if fast crosses slow to the upside and we are above VWAP
-                if self.crossover > 0 and self.dataclose[0] > self.vwap:  
-                    # BUY, BUY, BUY!!! (with all possible default parameters)
-                    self.log('BUY CREATE, %.2f' % self.dataclose[0])
-                    self.order = self.buy()
+            if self.crossover > 0 and self.dataclose[0] > self.vwap:
+                self.log('BUY CREATE, %.2f' % self.data.close[0])
+                self.order = self.buy()
 
         else:
-            if self.crossover < 0 or self.dataclose < self.vwap:  # in the market & cross to the downside
-                # SELL, SELL, SELL!!! (with all possible default parameters)
-                self.log('SELL CREATE, %.2f' % self.dataclose[0])
-                self.order = self.sell()  # close long position
+            if self.crossover < 0 or self.dataclose < self.vwap:
+                self.log('SELL CREATE, %.2f' % self.data.close[0])
+                self.order = self.sell()
 
     def stop(self):
         self.log('(Fast Period %2d) (Slow Period %2d) Ending Value %.2f' %
-                 (self.params.pfast, self.params.pslow, self.broker.getvalue()), doprint=True)
+                 (self.params.fast_length, self.params.slow_length, self.broker.getvalue()), doprint=True)
