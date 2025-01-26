@@ -5,9 +5,10 @@ from strategy.sma_cross_strategy import SmaCrossStrategy
 from strategy.rsi_bollinger_bands import RsiBollingerBands
 from strategy.ema_macd import EmaMACDStrategy
 from strategy.ema_vwap import EmaVwapStrategy
+from strategy.vwap import VWAPStrategy
 
 def main():
-    data = yf.download('BTC-USD', '2024-01-01', '2025-01-25', auto_adjust=True, multi_level_index=False)
+    data = yf.download('XRP-USD', '2024-01-01', '2025-01-25', auto_adjust=True, multi_level_index=False)
 
     cerebro = bt.Cerebro()
 
@@ -18,9 +19,9 @@ def main():
 
     data = bt.feeds.PandasData(dataname=data)
 
-    cerebro.adddata(data)
+    cerebro.adddata(data, name='XRP-USD')
 
-    cerebro.addstrategy(EmaVwapStrategy)
+    cerebro.addstrategy(VWAPStrategy)
 
     #cerebro.addobserver(bt.observers.DrawDown)
 
@@ -32,7 +33,7 @@ def main():
 
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
-    cerebro.plot(style='candlestick')
+    cerebro.plot()
 
 if __name__ == '__main__':
     main()
